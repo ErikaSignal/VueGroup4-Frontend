@@ -9,8 +9,14 @@
         </div>
         <section class="movies-grid">
             <div class="movie-poster" v-for="movie in movies" :key="movie.id">
-                <img :src="movie.posterUrl" :alt="movie.title" />
-                <h3>{{ movie.title }}</h3>
+                <router-link :to="{ name: 'MoviePage', params: { id: movie.id } }">
+                    <img :src="movie.posterUrl" :alt="movie.title" />
+                </router-link>
+                <h3>
+                    <router-link :to="{ name: 'MoviePage', params: { id: movie.id } }">
+                        {{ movie.title }}
+                    </router-link>
+                </h3>
             </div>
         </section>
     </div>
@@ -18,8 +24,8 @@
 
 <script>
 import poster1 from '/src/img/poster1.jpg';
-import poster2 from '/src/img/poster 2.jpg';
-import poster3 from '/src/img/poster 3.jpg';
+import poster2 from '/src/img/poster2.jpg';
+import poster3 from '/src/img/poster3.jpg';
 
 export default {
     setup() {
@@ -41,11 +47,11 @@ export default {
 
 <style scoped>
 .homepage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  background-color: black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-image: url('/src/img/background.png');
 }
 
 .logo {
@@ -58,32 +64,45 @@ export default {
     justify-content: space-between;
     width: 100%;
     gap: 10px;
-    padding-left: 50px;
-    padding-right: 50px;
+    padding-left: 60px;
+    padding-right: 60px;
 }
 
 .movie-poster {
-    flex-basis: 25%;
+    flex-basis: 27%;
     text-align: left;
 }
 
 .movie-poster img {
+    height: 500px;
+    width: auto;
+    object-fit: cover;
     max-width: 100%;
 }
 
 .movie-poster h3 {
     margin-top: 10px;
-    color: white;
+    padding-bottom: 100px;
 }
 
 .movie-poster-header {
-  width: 100%;
-  margin-bottom: 20px;
-  text-align: left;
-  padding-left: 50px;
+    width: 100%;
+    margin-bottom: 20px;
+    text-align: left;
+    padding-left: 60px;
 }
 
 .movie-poster-header h3 {
-  color: white;
+    color: yellow;
+}
+
+a {
+    color: yellow;
+    text-decoration: none;
+}
+
+a:hover {
+    color: rgb(255, 255, 255);
+    text-decoration: underline;
 }
 </style>
