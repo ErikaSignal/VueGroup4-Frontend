@@ -1,11 +1,9 @@
 <script setup>
-import { ref } from 'vue';
-
+import ModalComponent from './components/Modal.vue'; // Importera modal-komponenten
 </script>
 
 <template>
-  
+  <div id="app">
+    <ModalComponent /> <!-- Använder modalen -->
+  </div>
 </template>
-
-<style scoped>
-</style>
