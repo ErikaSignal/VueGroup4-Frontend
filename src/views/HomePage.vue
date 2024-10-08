@@ -121,4 +121,39 @@ a:hover {
     color: rgb(255, 255, 255);
     text-decoration: underline;
 }
+
+@media (max-width: 767px) {
+    .logo {
+        max-width: 90%;
+        height: auto;
+    }
+
+    .movies-grid {
+        flex-direction: column;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .movie-poster {
+        flex-basis: 100%;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .movie-poster img {
+        width: 80%;
+        height: auto;
+    }
+
+    .movie-poster h3 {
+        margin-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .movie-poster-header {
+        padding-left: 20px;
+        padding-right: 20px;
+        text-align: center;
+    }
+}
 </style>
