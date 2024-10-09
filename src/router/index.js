@@ -10,14 +10,9 @@ const routes = [
     component: HomePage
   },
   {
-    path: '/infopage',
-    name: 'Infopage',
-    component: Infopage1
-  },
-  {
-    path: '/movie/:id',
+    path: '/infopage/:id',
     name: 'MoviePage',
-    component: MoviePage
+    component: Infopage1
   }
 ];
 
