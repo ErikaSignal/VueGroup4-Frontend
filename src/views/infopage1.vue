@@ -4,7 +4,7 @@
       <header class="d-flex justify-content-center justify-content-md-start pb-5">
         <RouterLink to="/"><img src="@/assets/logo.png" alt="logo" width="200"></RouterLink>
       </header>
-  
+
       <!-- Film Information Section -->
       <section class="container-lg">
       <div v-if="post" class="row">
@@ -42,11 +42,11 @@
             
           </div>
           <div class="col-md col-12 d-flex justify-content-center align-items-center" >
-            <p class="fs-4">Platser kvar: {{ totalSeats-bookedSeats }} av {{ totalSeats }}</p>
+          <!--  <p class="fs-4">Platser kvar: {{ totalSeats-bookedSeats }} av {{ totalSeats }}</p> -->
           </div>
           <div class="col-md col-12 d-flex justify-content-center align-items-center" >
 
-          <button @click="bookSeat" type="button" class="btn btn-warning btn-lg">BOKA</button>
+         <ModalComponent/> 
 
           </div>
 
@@ -63,11 +63,11 @@
             
           </div>
           <div class="col-md col-12 d-flex justify-content-center align-items-center" >
-            <p class="fs-4">Platser kvar: {{ totalSeats-bookedSeats }} av {{ totalSeats }}</p>
+           <!-- <p class="fs-4">Platser kvar: {{ totalSeats-bookedSeats }} av {{ totalSeats }}</p> -->
           </div>
           <div class="col-md col-12 d-flex justify-content-center align-items-center" >
 
-          <button @click="bookSeat" type="button" class="btn btn-warning btn-lg">BOKA</button>
+            <ModalComponent/> 
 
           </div>
 
@@ -80,6 +80,8 @@
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getOneMovie } from '../services/api.js'
+import ModalComponent from '../components/Modal.vue'
+
 const route = useRoute()
 const post = ref(null)
 const error = ref(null)
@@ -100,8 +102,7 @@ async function fetchData() {
 </script>
   <script>
   import { RouterLink, RouterView } from 'vue-router'
-
-  export default {
+/*  export default {
     name: "MovieBooking",
     data() {
       return {
@@ -120,6 +121,7 @@ async function fetchData() {
       },
     },
   };
+  */
   </script>
   
   <style scoped>

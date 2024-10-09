@@ -46,7 +46,7 @@ const resetBooking = () => {
     <!-- Knapp för att öppna modalen -->
     <button
       type="button"
-      class="btn btn-primary"
+      class="btn btn-warning btn-lg"
       data-bs-toggle="modal"
       data-bs-target="#exampleModalCenter"
       @click="resetBooking"
@@ -56,7 +56,7 @@ const resetBooking = () => {
 
     <!-- Modal -->
     <div
-      class="modal fade"
+      class="modal fade text-dark"
       id="exampleModalCenter"
       tabindex="-1"
       aria-labelledby="exampleModalCenterTitle"
