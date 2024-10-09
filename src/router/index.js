@@ -1,11 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Infopage1 from '../views/infopage1.vue'
+import App from '../App.vue'
 
 const routes = [
   {
-    path: '/',
-    name: 'infopage1',
+    path: '/infopage',
+    name: 'Infopage',
     component: Infopage1
+  },
+  {
+    path: '/',
+    name: 'App',
+    component: App
   }
 ]
 
