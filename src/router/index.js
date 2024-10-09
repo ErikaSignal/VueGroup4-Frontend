@@ -1,23 +1,28 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Infopage1 from '../views/infopage1.vue'
-import App from '../App.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import HomePage from '/src/views/HomePage.vue';
+import MoviePage from '/src/views/MoviePage.vue';
 
 const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    component: HomePage
+  },
   {
     path: '/infopage',
     name: 'Infopage',
     component: Infopage1
   },
   {
-    path: '/',
-    name: 'App',
-    component: App
+    path: '/movie/:id',
+    name: 'MoviePage',
+    component: MoviePage
   }
-]
+];
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes
-})
+});
 
-export default router
+export default router;
