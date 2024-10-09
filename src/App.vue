@@ -1,9 +1,10 @@
 <script setup>
-import ModalComponent from './components/Modal.vue'; // Importera modal-komponenten
+import { useRouter } from 'vue-router'; // Importera useRouter om du behöver det
+import router from './router'; // Importera din router
 </script>
 
 <template>
-  <div id="app">
-    <ModalComponent /> <!-- Använder modalen -->
-  </div>
+  <main>
+    <router-view></router-view> <!-- Använd router-view för att visa den aktuella komponenten -->
+  </main>
 </template>
