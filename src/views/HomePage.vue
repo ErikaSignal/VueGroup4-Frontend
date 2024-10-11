@@ -25,6 +25,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+
 import poster1 from '/src/img/poster1.jpg';
 import poster2 from '/src/img/poster2.jpg';
 import poster3 from '/src/img/poster3.jpg';

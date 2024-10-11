@@ -63,7 +63,7 @@
             
           </div>
           <div class="col-md col-12 d-flex justify-content-center align-items-center" >
-           <!-- <p class="fs-4">Platser kvar: {{ totalSeats-bookedSeats }} av {{ totalSeats }}</p> -->
+           <p class="fs-5">Platser kvar: {{ filmer[0].totalSeats - filmer[0].bookedSeats }} av {{ filmer[0].totalSeats }}</p>
           </div>
           <div class="col-md col-12 d-flex justify-content-center align-items-center" >
 
@@ -81,6 +81,26 @@ import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getOneMovie } from '../services/api.js'
 import ModalComponent from '../components/Modal.vue'
+import { onMounted } from 'vue';
+import axios from 'axios';
+
+axios.defaults.baseURL = 'http://localhost:8081/api';
+
+    const filmer = ref([]);  
+
+    const fetchFilmer = async () => {
+      try {
+        const response = await axios.get('/booking');
+        filmer.value = response.data;  
+        console.log("Filmer:", filmer.value);
+      } catch (error) {
+        console.error("Kunde inte hämta filmer:", error);
+      }
+    };
+
+    onMounted(() => {
+      fetchFilmer();  
+    });
 
 const route = useRoute()
 const post = ref(null)
