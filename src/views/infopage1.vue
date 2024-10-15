@@ -32,12 +32,12 @@
       <!-- Visning Information Section -->
       <section class="container py-4 ">
         <h3>Torsdag 10 Oktober</h3>
-          <div class="row custom-height col-md col-11 m-auto rounded border mb-5 pb-md-0 pb-4 w-100">
+        <div class="row custom-height col-md col-11 m-auto rounded border mb-5 pb-md-0 pb-4 w-100">
           
             <img class="col-md col-12 p-4 " src="https://www.emp-shop.se/dw/image/v2/BBQV_PRD/on/demandware.static/-/Sites-master-emp/default/dw79144a0d/images/5/2/4/3/524369a.jpg?sw=350&sh=400&sm=fit&sfrm=png" alt="Movie Poster" height="180">
          
           <div class="col-md col-12 d-flex flex-column justify-content-center align-items-center" >
-            <p class="fs-2">{{post.title}}</p>
+            <p  v-if="post" class="fs-2">{{ post.title }}</p>
             <p class="fs-4">Kl 18:00</p>
             
           </div>
@@ -53,18 +53,22 @@
       </div>
       <h3>Onsdag 16 Oktober</h3>
             
-        <div class="row custom-height col-md col-11 m-auto rounded border mb-5 pb-md-0 pb-4 w-100">
+          <div   class="row custom-height col-md col-11 m-auto rounded border mb-5 pb-md-0 pb-4 w-100">
           
             <img class="col-md col-12 p-4 " src="https://www.emp-shop.se/dw/image/v2/BBQV_PRD/on/demandware.static/-/Sites-master-emp/default/dw79144a0d/images/5/2/4/3/524369a.jpg?sw=350&sh=400&sm=fit&sfrm=png" alt="Movie Poster" height="180">
          
           <div class="col-md col-12 d-flex flex-column justify-content-center align-items-center" >
-            <p class="fs-2">{{post.title}}</p>
+            <p v-if="post" class="fs-2">{{post.title}}</p>
             <p class="fs-4">Kl 19:15</p>
             
           </div>
           <div class="col-md col-12 d-flex justify-content-center align-items-center" >
-           <p class="fs-5">Platser kvar: {{ filmer[0].totalSeats - filmer[0].bookedSeats }} av {{ filmer[0].totalSeats }}</p>
-          </div>
+        <p v-if="filmer.length > 0" class="fs-5">
+  Platser kvar: {{ filmer[0].totalSeats - filmer[0].bookedSeats }} av {{ filmer[0].totalSeats }}
+</p>
+<p v-else>
+  Laddar bokningsinformation...
+</p>      </div>
           <div class="col-md col-12 d-flex justify-content-center align-items-center" >
 
             <ModalComponent/> 
@@ -86,7 +90,8 @@ import axios from 'axios';
 
 axios.defaults.baseURL = 'http://localhost:8081/api';
 
-    const filmer = ref([]);  
+const filmer = ref([]);
+
 
     const fetchFilmer = async () => {
       try {
