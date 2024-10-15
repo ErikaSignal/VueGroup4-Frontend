@@ -1,14 +1,31 @@
 <script setup>
 import { ref } from 'vue';
-
+import axios from 'axios';
+axios.defaults.baseURL = 'http://localhost:8081/api';
 // Reaktiva variabler för e-post, antal biljetter och bokningsstatus
 const email = ref('');
-const bookedSeats = ref(1); 
+const requestedSeats = ref(1); 
 const isBookingConfirmed = ref(false); // Variabel för att avgöra om bokningen är bekräftad
+
+const updateBooking = async () => {
+  try {
+    const bookingId = 1; // Replace with the correct booking ID
+    const updatedBooking = {
+      bookedSeats: requestedSeats.value // Skicka antal bokade platser som ett objekt
+    };
+
+    // Skicka hela objektet istället för bara requestedSeats.value
+    const response = await axios.patch(`/booking/${bookingId}`, updatedBooking);
+    console.log('Bokningen har uppdaterats:', response.data);
+  } catch (error) {
+    console.error('Det gick inte att uppdatera bokningen:', error);
+  }
+};
+
 
 // Funktion för att spara ändringarna 
 const saveChanges = () => {
-  if (email.value === '' || bookedSeats.value < 1) {
+  if (email.value === '' || requestedSeats.value < 1) {
     alert('Vänligen fyll i en giltig e-postadress och välj minst en biljett.');
     return;
   }
@@ -18,18 +35,19 @@ const saveChanges = () => {
 
   // Här kan du skicka eller spara datan
   console.log('E-post:', email.value);
-  console.log('Antal biljetter:', bookedSeats.value);
+  console.log('Antal biljetter:', requestedSeats.value);
+  updateBooking()
 };
 
 //Lägg till biljetter
 const increaseTickets = () => {
-  bookedSeats.value++;
+  requestedSeats.value++;
 };
 
 //Minska antal biljeter
 const decreaseTickets = () => {
-  if (bookedSeats.value > 1) {
-    bookedSeats.value--;
+  if (requestedSeats.value > 1) {
+    requestedSeats.value--;
   }
 };
 
@@ -37,7 +55,7 @@ const decreaseTickets = () => {
 const resetBooking = () => {
   isBookingConfirmed.value = false;
   email.value = ''; 
-  bookedSeats.value = 1; 
+  requestedSeats.value = 1; 
 };
 </script>
 
@@ -92,7 +110,7 @@ const resetBooking = () => {
               </div>
 
               <div class="form-group mb-3">
-                <label for="bookedSeats">Antal biljetter:</label>
+                <label for="requestedSeats">Antal biljetter:</label>
                 <div class="input-group">
                   <button
                     class="btn btn-outline-secondary"
@@ -104,8 +122,8 @@ const resetBooking = () => {
                   <input
                     type="number"
                     class="form-control text-center"
-                    id="bookedSeats"
-                    v-model="bookedSeats"
+                    id="requestedSeats"
+                    v-model="requestedSeats"
                     min="1"
                     readonly
                   />
@@ -127,7 +145,7 @@ const resetBooking = () => {
                 <strong>E-post:</strong> {{ email }}
               </p>
               <p>
-                <strong>Antal biljetter:</strong> {{ bookedSeats }}
+                <strong>Antal biljetter:</strong> {{ requestedSeats }}
               </p>
             </div>
           </div>
