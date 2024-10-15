@@ -34,7 +34,7 @@
     <!-- Visning Information Section -->
     <section v-for="(film, index) in filmer" :key="index" class="container py-4 ">
 
-      <h3>Onsdag 16 Oktober</h3>
+      <h3>{{ formatDate(film.bookingTime) }}</h3>
 
       <div  class="row custom-height col-md col-11 m-auto rounded border mb-5 pb-md-0 pb-4 w-100">
 
@@ -44,7 +44,7 @@
 
         <div class="col-md col-12 d-flex flex-column justify-content-center align-items-center">
           <p v-if="post" class="fs-2">{{ post.title }}</p>
-          <p class="fs-4">Kl 19:15</p>
+          <p class="fs-4">{{ formatTime(film.bookingTime) }}</p>
 
         </div>
         <div 
@@ -78,8 +78,21 @@ import axios from 'axios';
 axios.defaults.baseURL = 'http://localhost:8081/api';
 
 const filmer = ref([]);
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const options = { weekday: 'long', day: 'numeric', month: 'long' };
+  const formattedDate = date.toLocaleDateString('sv-SE', options);
+  return capitalizeFirstLetter(formattedDate);
+};
 
-
+const formatTime = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+  
+};
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
 const fetchFilmer = async () => {
   try {
     const response = await axios.get(`/swapi/${route.params.id}`);
@@ -89,6 +102,7 @@ const fetchFilmer = async () => {
     console.error("Kunde inte hämta filmer:", error);
   }
 };
+
 
 onMounted(() => {
   fetchFilmer();
