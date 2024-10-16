@@ -1,10 +1,30 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { getOneMovie } from '../services/api.js';
 
 // Reaktiva variabler för e-post, antal biljetter och bokningsstatus
 const email = ref('');
 const bookedSeats = ref(1); 
 const isBookingConfirmed = ref(false); // Variabel för att avgöra om bokningen är bekräftad
+const title = ref(''); //Titel från API
+
+
+// Funktion för att hämta titel från API
+const route = useRoute();
+const fetchMovie = async () => {
+  try {
+    const movieData = await getOneMovie(route.params.id);
+    title.value = movieData.title;
+  } catch (error) {
+    console.error('Kunde inte hämta filmtiteln:', error);
+  }
+};
+
+// Anropa fetchMovie när komponenten monteras
+onMounted(() => {
+  fetchMovie();
+});
 
 // Funktion för att spara ändringarna 
 const saveChanges = () => {
@@ -66,7 +86,7 @@ const resetBooking = () => {
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="exampleModalCenterTitle">
-              Boka Star Wars: The Rise of Skywalker kl.18:00
+              Boka {{ title }} kl.18:00
             </h5>
             <button
               type="button"
