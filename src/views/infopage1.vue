@@ -165,4 +165,13 @@ onMounted(() => {
   height: 250px;
   object-fit: contain;
 }
+
+@media (max-width: 768px) {
+  .poster-small {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+  }
+}
 </style>
