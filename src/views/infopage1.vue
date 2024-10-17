@@ -58,8 +58,7 @@
         </div>
         <div class="col-md col-12 d-flex justify-content-center align-items-center">
 
-          <ModalComponent />
-
+<ModalComponent :movieId="film.bookingId" />
         </div>
 
       </div>
