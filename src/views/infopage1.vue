@@ -18,12 +18,13 @@
         <div class="col-md col-11 d-flex flex-column custom-border mx-auto custom-bg">
           <div style="height: 2.5rem;"></div>
           <div class="flex-grow-1">
-            <p class="fs-4 fw-bold">Utgivningsdatum: {{ post.release_date }}</p>
+            <p class="fs-4 f"><strong> Utgivningsdatum:</strong> {{ post.release_date }}</p>
             <p class="fs-4 fw-bold">Producent: {{ post.producer }}</p>
             <p class="fs-4 fw-bold">Regissör: {{ post.director }}</p>
           </div>
         </div>
       </div>
+      <div v-else class="text-center">Laddar...</div>
     </section>
 
     <!-- Visning Information Section -->
@@ -141,7 +142,7 @@ onMounted(() => {
   background-image: url('@/assets/bg-pic3.png');
   background-size: cover;
   background-position: center;
-  min-height: 100%;
+  min-height: 100vh;
   min-width: 100%;
   color: white;
   padding: 0;
