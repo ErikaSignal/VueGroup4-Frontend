@@ -1,31 +1,38 @@
 <script setup>
-import { ref, reactive, watch, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 const props = defineProps({
   movieId: Number,
+  title: String,
 });
 
-// Log the movieId to ensure it's reactive
-watch(() => props.movieId, (newMovieId) => {
-  console.log('New movieId:', newMovieId);
-});
 const email = ref('');
 const bookedSeats = ref(1); 
 const isBookingConfirmed = ref(false);
-const isModalOpen = ref(false)
 
-watch(() => isModalOpen, (newMovieId) => {
-  console.log('New movieId:', newMovieId);
+// Hantera modalen med Bootstrap's event för att återställa bokningen vid öppning
+onMounted(() => {
+  const modalElement = document.getElementById('exampleModalCenter');
+
+  // Återställ modalen varje gång den öppnas
+  modalElement.addEventListener('show.bs.modal', () => {
+    resetBooking();
+  });
 });
- 
-    // Access movieId correctly in onMounted
-    onMounted(() => {
-      console.log(props.movieId); // Accessing movieId through props
-    });
-    const formatTime = (dateString) => {
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const options = { weekday: 'long', day: 'numeric', month: 'long' };
+  return date.toLocaleDateString('sv-SE', options);
+
+};
+
+const formatTime = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+  
 };
+
 const saveChanges = () => {
   if (email.value === '' || bookedSeats.value < 1) {
     alert('Vänligen fyll i en giltig e-postadress och välj minst en biljett.');
@@ -33,14 +40,11 @@ const saveChanges = () => {
   }
   
   isBookingConfirmed.value = true;
-
   console.log('E-post:', email.value);
   console.log('Antal biljetter:', bookedSeats.value);
-
 };
 
-
-// Ticket management functions
+// Hantera biljetter
 const increaseTickets = () => {
   bookedSeats.value++;
 };
@@ -51,21 +55,16 @@ const decreaseTickets = () => {
   }
 };
 
-// Reset booking function
+// Funktion för att återställa bokningen
 const resetBooking = () => {
   isBookingConfirmed.value = false;
   email.value = ''; 
   bookedSeats.value = 1; 
- 
 };
-
-
 </script>
 
 <template>
-
   <div>
-
     <!-- Modal -->
     <div 
       class="modal fade text-dark"
@@ -77,7 +76,9 @@ const resetBooking = () => {
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h4>{{ movieId }}</h4>
+
+
+            <h4> {{ props.title }}  {{ formatDate(movieId )}} {{ formatTime(movieId )}}</h4>
             <button
               type="button"
               class="btn-close"
@@ -163,7 +164,6 @@ const resetBooking = () => {
     </div>
   </div>
 </template>
-
 <style scoped>
 /* Stil för input-fältet för antal biljetter */
 .input-group {

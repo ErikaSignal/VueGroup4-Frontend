@@ -66,7 +66,7 @@
     </div>
 
     <!-- Modal Component -->
-    <ModalComponent :movieId="currentMovieId" />
+    <ModalComponent :movieId="currentMovieId"  :title ="post.title "/>
   </section>
 
   </div>
