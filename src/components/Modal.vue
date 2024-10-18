@@ -1,124 +1,73 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
-import { getOneMovie } from '../services/api.js';
+import { ref, reactive, watch, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
+const props = defineProps({
+  movieId: Number,
+});
 
-
-axios.defaults.baseURL = 'http://localhost:8081/api';
-
-// Reaktiva variabler för e-post, antal biljetter och bokningsstatus
+// Log the movieId to ensure it's reactive
+watch(() => props.movieId, (newMovieId) => {
+  console.log('New movieId:', newMovieId);
+});
 const email = ref('');
 const bookedSeats = ref(1); 
-const isBookingConfirmed = ref(false); // Variabel för att avgöra om bokningen är bekräftad
-const title = ref(''); //Titel från API
-const filmer = ref(null); //filmer från backend
+const isBookingConfirmed = ref(false);
+const isModalOpen = ref(false)
 
-const props = defineProps({
-  movieId: Number
+watch(() => isModalOpen, (newMovieId) => {
+  console.log('New movieId:', newMovieId);
 });
-
-// Log the initial value of movieId to check if it's received
-onMounted(() => {
-  console.log('Movie ID on mounted:', props.movieId);
-});
-
-// Watch for changes in movieId and fetch movie when updated
-watch(
-  () => props.movieId,
-  (newMovieId) => {
-    console.log('Movie ID updated:', newMovieId);
-   // fetchMovie(); // Fetch new movie data when movieId changes
-  },
-  { immediate: true }
-);
-
-// Funktion för att hämta titel från API
-const route = useRoute();
-const fetchMovie = async () => {
-  try {
-    const movieData = await getOneMovie(route.params.id);
-    title.value = movieData.title;
-  } catch (error) {
-    console.error('Kunde inte hämta filmtiteln:', error);
-  }
-};
-
-// const fetchMovietime = async () => {
-//   try {
-//     const response = await axios.get(`/booking/${route.params.id}`);
-//     filmer.value = response.data;
-//     console.log("Filmer:", filmer.value);
-//   } catch (error) {
-//     console.error("Kunde inte hämta filmer:", error);
-//   }
-// };
-// Anropa fetchMovie när komponenten monteras
-onMounted(() => {
-  fetchMovie();
-});
-
-onMounted(() => {
-  fetchMovieTime();
-});
-
-// Funktion för att formatera tiden
-const formatTime = (dateString) => {
+ 
+    // Access movieId correctly in onMounted
+    onMounted(() => {
+      console.log(props.movieId); // Accessing movieId through props
+    });
+    const formatTime = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
 };
-
-
-// Funktion för att spara ändringarna 
 const saveChanges = () => {
   if (email.value === '' || bookedSeats.value < 1) {
     alert('Vänligen fyll i en giltig e-postadress och välj minst en biljett.');
     return;
   }
-
-  // Sätt bokningsstatus till bekräftad
+  
   isBookingConfirmed.value = true;
 
-  // Här kan du skicka eller spara datan
   console.log('E-post:', email.value);
   console.log('Antal biljetter:', bookedSeats.value);
+
 };
 
-//Lägg till biljetter
+
+// Ticket management functions
 const increaseTickets = () => {
   bookedSeats.value++;
 };
 
-//Minska antal biljeter
 const decreaseTickets = () => {
   if (bookedSeats.value > 1) {
     bookedSeats.value--;
   }
 };
 
-// Funktion för att återställa bokningsstatus
+// Reset booking function
 const resetBooking = () => {
   isBookingConfirmed.value = false;
   email.value = ''; 
   bookedSeats.value = 1; 
+ 
 };
+
+
 </script>
 
 <template>
+
   <div>
-    <!-- Knapp för att öppna modalen -->
-    <button
-      type="button"
-      class="btn btn-warning btn-lg"
-      data-bs-toggle="modal"
-      data-bs-target="#exampleModalCenter"
-      @click="resetBooking"
-    >
-      Boka
-    </button>
 
     <!-- Modal -->
-    <div
+    <div 
       class="modal fade text-dark"
       id="exampleModalCenter"
       tabindex="-1"
@@ -128,9 +77,7 @@ const resetBooking = () => {
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalCenterTitle">
-              Boka {{ title }} kl.18:00
-            </h5>
+            <h4>{{ movieId }}</h4>
             <button
               type="button"
               class="btn-close"
@@ -141,7 +88,6 @@ const resetBooking = () => {
 
           <!-- Modal Body - Dynamiskt innehåll -->
           <div class="modal-body">
-            <!-- Visa formulär om bokningen inte är bekräftad -->
             <div v-if="!isBookingConfirmed">
               <div class="form-group mb-3">
                 <label for="email">Email adress:</label>
@@ -183,7 +129,6 @@ const resetBooking = () => {
               </div>
             </div>
 
-            <!-- Visa bekräftelsemeddelande om bokningen är bekräftad -->
             <div v-else>
               <p>Tack för din bokning!</p>
               <p>
@@ -195,7 +140,6 @@ const resetBooking = () => {
             </div>
           </div>
 
-          <!-- Modal Footer - Dynamisk knapp beroende på bokningsstatus -->
           <div class="modal-footer">
             <button
               type="button"
@@ -205,7 +149,6 @@ const resetBooking = () => {
               Stäng
             </button>
 
-            <!-- Visa "Bekräfta bokning" om bokningen inte är klar -->
             <button
               v-if="!isBookingConfirmed"
               type="button"

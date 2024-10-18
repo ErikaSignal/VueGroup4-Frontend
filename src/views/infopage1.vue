@@ -33,36 +33,42 @@
 
     <!-- Visning Information Section -->
     <section v-for="(film, index) in filmer" :key="index" class="container py-4 ">
-
-      <h3>{{ formatDate(film.bookingTime) }}</h3>
-
-      <div  class="row custom-height col-md col-11 m-auto rounded border mb-5 pb-md-0 pb-4 w-100">
-
-        <img class="col-md col-12 p-4 "
-          src="https://www.emp-shop.se/dw/image/v2/BBQV_PRD/on/demandware.static/-/Sites-master-emp/default/dw79144a0d/images/5/2/4/3/524369a.jpg?sw=350&sh=400&sm=fit&sfrm=png"
-          alt="Movie Poster" height="180">
-
-        <div class="col-md col-12 d-flex flex-column justify-content-center align-items-center">
-          <p v-if="post" class="fs-2">{{ post.title }}</p>
-          <p class="fs-4">{{ formatTime(film.bookingTime) }}</p>
-
-        </div>
-        <div 
-          class="col-md col-12 d-flex justify-content-center align-items-center">
-          <p v-if="filmer.length > 0" class="fs-5">
-            Platser kvar: {{ film.totalSeats - film.bookedSeats }} av {{ film.totalSeats }}
-          </p>
-          <p v-else>
-            Laddar bokningsinformation...
-          </p>
-        </div>
-        <div class="col-md col-12 d-flex justify-content-center align-items-center">
-
-<ModalComponent :movieId="film.bookingId" />
-        </div>
-
+    <!-- Existing Film Information Section -->
+    <h3>{{ formatDate(film.bookingTime) }}</h3>
+    <div class="row custom-height col-md col-11 m-auto rounded border mb-5 pb-md-0 pb-4 w-100">
+      <img class="col-md col-12 p-4"
+        src="https://www.emp-shop.se/dw/image/v2/BBQV_PRD/on/demandware.static/-/Sites-master-emp/default/dw79144a0d/images/5/2/4/3/524369a.jpg?sw=350&sh=400&sm=fit&sfrm=png"
+        alt="Movie Poster" height="180">
+      <div class="col-md col-12 d-flex flex-column justify-content-center align-items-center">
+        <p v-if="post" class="fs-2">{{ post.title }}</p>
+        <p class="fs-4">{{ formatTime(film.bookingTime) }}</p>
       </div>
-    </section>
+      <div class="col-md col-12 d-flex justify-content-center align-items-center">
+        <p v-if="filmer.length > 0" class="fs-5">
+          Platser kvar: {{ film.totalSeats - film.bookedSeats }} av {{ film.totalSeats }}
+        </p>
+        <p v-else>
+          Laddar bokningsinformation...
+        </p>
+      </div>
+
+      <div class="col-md col-12 d-flex justify-content-center align-items-center">
+        <button
+          type="button"
+          class="btn btn-warning btn-lg"
+          data-bs-toggle="modal"
+          data-bs-target="#exampleModalCenter"
+          @click="setMovieId(film.bookingTime)" 
+        >
+          Boka
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Component -->
+    <ModalComponent :movieId="currentMovieId" />
+  </section>
+
   </div>
 </template>
 
@@ -147,6 +153,12 @@ import { RouterLink, RouterView } from 'vue-router'
     },
   };
   */
+
+const currentMovieId = ref(null);
+
+const setMovieId = (id) => {
+  currentMovieId.value = id; 
+};
 </script>
 
 <style scoped>
