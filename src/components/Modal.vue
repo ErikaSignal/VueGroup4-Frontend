@@ -1,39 +1,61 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+const props = defineProps({
+  movieId: Number,
+  title: String,
+});
 
-// Reaktiva variabler för e-post, antal biljetter och bokningsstatus
 const email = ref('');
 const bookedSeats = ref(1); 
-const isBookingConfirmed = ref(false); // Variabel för att avgöra om bokningen är bekräftad
+const isBookingConfirmed = ref(false);
 
-// Funktion för att spara ändringarna 
+// Hantera modalen med Bootstrap's event för att återställa bokningen vid öppning
+onMounted(() => {
+  const modalElement = document.getElementById('exampleModalCenter');
+
+  // Återställ modalen varje gång den öppnas
+  modalElement.addEventListener('show.bs.modal', () => {
+    resetBooking();
+  });
+});
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const options = { weekday: 'long', day: 'numeric', month: 'long' };
+  return date.toLocaleDateString('sv-SE', options);
+
+};
+
+const formatTime = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+  
+};
+
 const saveChanges = () => {
   if (email.value === '' || bookedSeats.value < 1) {
     alert('Vänligen fyll i en giltig e-postadress och välj minst en biljett.');
     return;
   }
-
-  // Sätt bokningsstatus till bekräftad
+  
   isBookingConfirmed.value = true;
-
-  // Här kan du skicka eller spara datan
   console.log('E-post:', email.value);
   console.log('Antal biljetter:', bookedSeats.value);
 };
 
-//Lägg till biljetter
+// Hantera biljetter
 const increaseTickets = () => {
   bookedSeats.value++;
 };
 
-//Minska antal biljeter
 const decreaseTickets = () => {
   if (bookedSeats.value > 1) {
     bookedSeats.value--;
   }
 };
 
-// Funktion för att återställa bokningsstatus
+// Funktion för att återställa bokningen
 const resetBooking = () => {
   isBookingConfirmed.value = false;
   email.value = ''; 
@@ -43,19 +65,8 @@ const resetBooking = () => {
 
 <template>
   <div>
-    <!-- Knapp för att öppna modalen -->
-    <button
-      type="button"
-      class="btn btn-warning btn-lg"
-      data-bs-toggle="modal"
-      data-bs-target="#exampleModalCenter"
-      @click="resetBooking"
-    >
-      Boka
-    </button>
-
     <!-- Modal -->
-    <div
+    <div 
       class="modal fade text-dark"
       id="exampleModalCenter"
       tabindex="-1"
@@ -65,9 +76,9 @@ const resetBooking = () => {
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalCenterTitle">
-              Boka Star Wars: The Rise of Skywalker kl.18:00
-            </h5>
+
+
+            <h4> {{ props.title }}  {{ formatDate(movieId )}} {{ formatTime(movieId )}}</h4>
             <button
               type="button"
               class="btn-close"
@@ -78,7 +89,6 @@ const resetBooking = () => {
 
           <!-- Modal Body - Dynamiskt innehåll -->
           <div class="modal-body">
-            <!-- Visa formulär om bokningen inte är bekräftad -->
             <div v-if="!isBookingConfirmed">
               <div class="form-group mb-3">
                 <label for="email">Email adress:</label>
@@ -120,7 +130,6 @@ const resetBooking = () => {
               </div>
             </div>
 
-            <!-- Visa bekräftelsemeddelande om bokningen är bekräftad -->
             <div v-else>
               <p>Tack för din bokning!</p>
               <p>
@@ -132,7 +141,6 @@ const resetBooking = () => {
             </div>
           </div>
 
-          <!-- Modal Footer - Dynamisk knapp beroende på bokningsstatus -->
           <div class="modal-footer">
             <button
               type="button"
@@ -142,7 +150,6 @@ const resetBooking = () => {
               Stäng
             </button>
 
-            <!-- Visa "Bekräfta bokning" om bokningen inte är klar -->
             <button
               v-if="!isBookingConfirmed"
               type="button"
@@ -157,7 +164,6 @@ const resetBooking = () => {
     </div>
   </div>
 </template>
-
 <style scoped>
 /* Stil för input-fältet för antal biljetter */
 .input-group {

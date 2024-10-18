@@ -28,17 +28,20 @@
     </section>
 
     <!-- Visning Information Section -->
-    <section v-for="(film, index) in filmer" :key="index" class="container py-4">
+    <section v-for="(film, index) in filmer" :key="index" class="container py-4 ">
+
       <h3>{{ formatDate(film.bookingTime) }}</h3>
 
       <div class="row custom-height col-md col-11 m-auto rounded border mb-5 pb-md-0 pb-4 w-100">
         <img class="poster-small col-md col-12 p-4" :src="getPosterById(route.params.id)" alt="Movie Poster">
         
-        <div class="col-md col-12 d-flex flex-column justify-content-center align-items-center">
+
+   <div class="col-md col-12 d-flex flex-column justify-content-center align-items-center">
           <p v-if="post" class="fs-2">{{ post.title }}</p>
           <p class="fs-4">{{ formatTime(film.bookingTime) }}</p>
         </div>
-        <div class="col-md col-12 d-flex justify-content-center align-items-center">
+        <div 
+          class="col-md col-12 d-flex justify-content-center align-items-center">
           <p v-if="filmer.length > 0" class="fs-5">
             Platser kvar: {{ film.totalSeats - film.bookedSeats }} av {{ film.totalSeats }}
           </p>
@@ -47,10 +50,22 @@
           </p>
         </div>
         <div class="col-md col-12 d-flex justify-content-center align-items-center">
-          <ModalComponent />
-        </div>
+        <button
+          type="button"
+          class="btn btn-warning btn-lg"
+          data-bs-toggle="modal"
+          data-bs-target="#exampleModalCenter"
+          @click="setMovieId(film.bookingTime)" 
+        >
+          Boka
+        </button>
       </div>
-    </section>
+    </div>
+
+    <!-- Modal Component -->
+    <ModalComponent :movieId="currentMovieId"  :title ="post.title "/>
+  </section>
+
   </div>
 </template>
 
@@ -71,7 +86,9 @@ const route = useRoute();
 const post = ref(null);
 const error = ref(null);
 const loading = ref(false);
-
+onMounted(() => {
+  fetchFilmer();
+});
 // Funktioner för datum och tid
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -126,11 +143,35 @@ async function fetchData() {
     loading.value = false;
   }
 }
+</script>
+<script>
+import { RouterLink, RouterView } from 'vue-router'
+/*  export default {
+    name: "MovieBooking",
+    data() {
+      return {
+        totalSeats: 10,
+        bookedSeats: 6, // Hårdkodade bokade platser
+      };
+    },
+    computed: {
+      availableSeats() {
+        return this.totalSeats - this.bookedSeats;
+      },
+    },
+    methods: {
+      bookSeat() {
+        //inget händer atm
+      },
+    },
+  };
+  */
 
-// Hämta filmdata vid montering
-onMounted(() => {
-  fetchFilmer();
-});
+const currentMovieId = ref(null);
+
+const setMovieId = (id) => {
+  currentMovieId.value = id; 
+};
 </script>
 
 <style scoped>
