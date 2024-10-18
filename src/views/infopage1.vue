@@ -55,7 +55,7 @@
           class="btn btn-warning btn-lg"
           data-bs-toggle="modal"
           data-bs-target="#exampleModalCenter"
-          @click="() => { setMovieId(film.bookingTime); setFilmId(film.filmId); }"
+          @click="() => { setMovieId(film.bookingTime); setFilmId(film.bookingId); }"
 
         >
           Boka
