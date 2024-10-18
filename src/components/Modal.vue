@@ -1,14 +1,17 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+axios.defaults.baseURL = 'http://localhost:8081/api';
 const props = defineProps({
   movieId: Number,
   title: String,
+  filmId: Number,
 });
 
 const email = ref('');
-const bookedSeats = ref(1); 
+const requestedSeats = ref(1); 
 const isBookingConfirmed = ref(false);
+
 
 // Hantera modalen med Bootstrap's event för att återställa bokningen vid öppning
 onMounted(() => {
@@ -20,12 +23,31 @@ onMounted(() => {
   });
 });
 
+const updateBooking = async () => {
+  try {
+    const bookingId = props.filmId;// Replace with the correct booking ID
+    const updatedBooking = {
+      bookedSeats: requestedSeats.value // Skicka antal bokade platser som ett objekt
+    };
+
+    console.log(bookingId)
+
+    // Skicka hela objektet istället för bara requestedSeats.value
+    const response = await axios.patch(`/booking/${bookingId}`, updatedBooking);
+    console.log('Bokningen har uppdaterats:', response.data);
+  } catch (error) {
+    console.error('Det gick inte att uppdatera bokningen:', error);
+  }
+};
+
 const formatDate = (dateString) => {
   const date = new Date(dateString);
   const options = { weekday: 'long', day: 'numeric', month: 'long' };
   return date.toLocaleDateString('sv-SE', options);
 
 };
+
+
 
 const formatTime = (dateString) => {
   const date = new Date(dateString);
@@ -34,24 +56,25 @@ const formatTime = (dateString) => {
 };
 
 const saveChanges = () => {
-  if (email.value === '' || bookedSeats.value < 1) {
+  if (email.value === '' || requestedSeats.value < 1) {
     alert('Vänligen fyll i en giltig e-postadress och välj minst en biljett.');
     return;
   }
   
   isBookingConfirmed.value = true;
   console.log('E-post:', email.value);
-  console.log('Antal biljetter:', bookedSeats.value);
+  console.log('Antal biljetter:', requestedSeats.value);
+  updateBooking()
 };
 
 // Hantera biljetter
 const increaseTickets = () => {
-  bookedSeats.value++;
+  requestedSeats.value++;
 };
 
 const decreaseTickets = () => {
-  if (bookedSeats.value > 1) {
-    bookedSeats.value--;
+  if (requestedSeats.value > 1) {
+    requestedSeats.value--;
   }
 };
 
@@ -59,7 +82,7 @@ const decreaseTickets = () => {
 const resetBooking = () => {
   isBookingConfirmed.value = false;
   email.value = ''; 
-  bookedSeats.value = 1; 
+  requestedSeats.value = 1; 
 };
 </script>
 
@@ -102,7 +125,7 @@ const resetBooking = () => {
               </div>
 
               <div class="form-group mb-3">
-                <label for="bookedSeats">Antal biljetter:</label>
+                <label for="requestedSeats">Antal biljetter:</label>
                 <div class="input-group">
                   <button
                     class="btn btn-outline-secondary"
@@ -114,8 +137,8 @@ const resetBooking = () => {
                   <input
                     type="number"
                     class="form-control text-center"
-                    id="bookedSeats"
-                    v-model="bookedSeats"
+                    id="requestedSeats"
+                    v-model="requestedSeats"
                     min="1"
                     readonly
                   />
@@ -136,7 +159,7 @@ const resetBooking = () => {
                 <strong>E-post:</strong> {{ email }}
               </p>
               <p>
-                <strong>Antal biljetter:</strong> {{ bookedSeats }}
+                <strong>Antal biljetter:</strong> {{ requestedSeats }}
               </p>
             </div>
           </div>

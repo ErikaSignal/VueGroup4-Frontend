@@ -55,7 +55,8 @@
           class="btn btn-warning btn-lg"
           data-bs-toggle="modal"
           data-bs-target="#exampleModalCenter"
-          @click="setMovieId(film.bookingTime)" 
+          @click="() => { setMovieId(film.bookingTime); setFilmId(film.bookingId); }"
+
         >
           Boka
         </button>
@@ -63,7 +64,7 @@
     </div>
 
     <!-- Modal Component -->
-    <ModalComponent :movieId="currentMovieId"  :title ="post.title "/>
+    <ModalComponent :movieId="currentMovieId" :title ="post.title" :filmId="currentFilmId" />
   </section>
 
   </div>
@@ -171,6 +172,12 @@ const currentMovieId = ref(null);
 
 const setMovieId = (id) => {
   currentMovieId.value = id; 
+};
+
+const currentFilmId = ref(null);
+
+const setFilmId = (id) => {
+  currentFilmId.value = id; 
 };
 </script>
 
