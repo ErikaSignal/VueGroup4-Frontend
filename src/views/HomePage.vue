@@ -28,14 +28,11 @@ import { ref, onMounted } from 'vue';
 import poster1 from '/src/assets/img/poster1.jpg';
 import poster2 from '/src/assets/img/poster2.jpg';
 import poster3 from '/src/assets/img/poster3.jpg';
+import { moviePosters } from '@/services/utils/json';
 import { getAllMovies } from '@/services/api';
 const logo = './src/assets/img/logo.png';
 
-const movies = ref([
-    { id: 1, title: 'Movie 1', posterUrl: poster1 },
-    { id: 2, title: 'Movie 2', posterUrl: poster2 },
-    { id: 3, title: 'Movie 3', posterUrl: poster3 }
-]);
+const movies = ref(moviePosters);
 
 
 const fetchMovies = async () => {

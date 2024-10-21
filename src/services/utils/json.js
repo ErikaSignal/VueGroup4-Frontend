@@ -7,3 +7,9 @@ export const posters = {
     2: poster2,
     3: poster3
   };
+
+  export const moviePosters = [
+    { id: 1, title: 'Movie 1', posterUrl: poster1 },
+    { id: 2, title: 'Movie 2', posterUrl: poster2 },
+    { id: 3, title: 'Movie 3', posterUrl: poster3 }
+];
