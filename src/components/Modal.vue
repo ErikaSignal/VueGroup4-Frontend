@@ -11,6 +11,7 @@ const props = defineProps({
 const email = ref('');
 const requestedSeats = ref(1); 
 const isBookingConfirmed = ref(false);
+const emit = defineEmits(['reload-parent']);
 
 
 // Hantera modalen med Bootstrap's event för att återställa bokningen vid öppning
@@ -34,11 +35,15 @@ const updateBooking = async () => {
 
     // Skicka hela objektet istället för bara requestedSeats.value
     const response = await axios.patch(`/booking/${bookingId}`, updatedBooking);
+    if(response.status==200){
+      emit('reload-parent');
+    }
     console.log('Bokningen har uppdaterats:', response.data);
   } catch (error) {
     console.error('Det gick inte att uppdatera bokningen:', error);
   }
 };
+
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -55,7 +60,7 @@ const formatTime = (dateString) => {
   
 };
 
-const saveChanges = () => {
+const saveChanges = async () => {
   if (email.value === '' || requestedSeats.value < 1) {
     alert('Vänligen fyll i en giltig e-postadress och välj minst en biljett.');
     return;
@@ -64,7 +69,7 @@ const saveChanges = () => {
   isBookingConfirmed.value = true;
   console.log('E-post:', email.value);
   console.log('Antal biljetter:', requestedSeats.value);
-  updateBooking()
+  await updateBooking()
 };
 
 // Hantera biljetter
