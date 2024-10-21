@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 axios.defaults.baseURL = 'http://localhost:8081/api';
+
 const props = defineProps({
   movieId: Number,
   title: String,
@@ -15,38 +16,32 @@ const emit = defineEmits(['reload-parent']);
 const errorMessage = ref('');
 const isBookingSuccessful = ref(false);
 
-
-// Hantera modalen med Bootstrap's event för att återställa bokningen vid öppning
+// Hantera modalen och återställ bokningsstatus och felmeddelanden varje gång den öppnas
 onMounted(() => {
   const modalElement = document.getElementById('exampleModalCenter');
-
-  // Återställ modalen varje gång den öppnas
+  
   modalElement.addEventListener('show.bs.modal', () => {
-    resetBooking();
+    resetBooking();  // Återställ bokningen varje gång modalen öppnas
   });
 });
 
 const updateBooking = async () => {
   try {
-    const bookingId = props.filmId;// Replace with the correct booking ID
+    const bookingId = props.filmId;
     const updatedBooking = {
-      bookedSeats: requestedSeats.value // Skicka antal bokade platser som ett objekt
+      bookedSeats: requestedSeats.value
     };
 
-    console.log(bookingId)
-
-    // Skicka hela objektet istället för bara requestedSeats.value
     const response = await axios.patch(`/booking/${bookingId}`, updatedBooking);
-    if(response.status==200){
+    if (response.status == 200) {
       emit('reload-parent');
-      isBookingSuccessful.value = true; //Bokning lyckades
-      isBookingConfirmed.value = true; //Bekräftar bokningen
+      isBookingSuccessful.value = true;
+      isBookingConfirmed.value = true;
       errorMessage.value = '';
     }
-    //console.log('Bokningen har uppdaterats:', response.data);
   } catch (error) {
     if (error.response && error.response.status === 400) {
-      errorMessage.value = error.response.data; // Visa backend-felmeddelandet
+      errorMessage.value = error.response.data;
     } else {
       errorMessage.value = 'Ett oväntat fel inträffade, försök igen senare.';
     }
@@ -54,32 +49,14 @@ const updateBooking = async () => {
   }
 };
 
-
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  const options = { weekday: 'long', day: 'numeric', month: 'long' };
-  return date.toLocaleDateString('sv-SE', options);
-
-};
-
-
-
-const formatTime = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
-  
-};
-
 const saveChanges = async () => {
   if (email.value === '' || requestedSeats.value < 1) {
     alert('Vänligen fyll i en giltig e-postadress och välj minst en biljett.');
     return;
   }
-  
+
   isBookingConfirmed.value = true;
-  console.log('E-post:', email.value);
-  console.log('Antal biljetter:', requestedSeats.value);
-  await updateBooking()
+  await updateBooking();
 };
 
 // Hantera biljetter
@@ -96,8 +73,22 @@ const decreaseTickets = () => {
 // Funktion för att återställa bokningen
 const resetBooking = () => {
   isBookingConfirmed.value = false;
-  email.value = ''; 
-  requestedSeats.value = 1; 
+  isBookingSuccessful.value = false; // Återställ bokningsstatus
+  errorMessage.value = '';           // Återställ felmeddelandet
+  email.value = '';
+  requestedSeats.value = 1;
+};
+
+// Datum och tid formattering
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const options = { weekday: 'long', day: 'numeric', month: 'long' };
+  return date.toLocaleDateString('sv-SE', options);
+};
+
+const formatTime = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
 };
 </script>
 
@@ -114,105 +105,53 @@ const resetBooking = () => {
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-
-            <h4> {{ props.title }}  {{ formatDate(movieId )}} kl. {{ formatTime(movieId )}}</h4>
-            <div v-if="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <h4>{{ props.title }} {{ formatDate(movieId) }} kl. {{ formatTime(movieId) }}</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
 
-<!-- Modal Body - Dynamiskt innehåll -->
-<div class="modal-body">
-  <div v-if="!isBookingConfirmed">
-    <div class="form-group mb-3">
-      <label for="email">Email adress:</label>
-      <input
-        type="email"
-        class="form-control"
-        id="email"
-        v-model="email"
-        placeholder="Skriv din e-postadress"
-      />
-    </div>
+          <div class="modal-body">
+            <div v-if="!isBookingConfirmed">
+              <div class="form-group mb-3">
+                <label for="email">Email adress:</label>
+                <input type="email" class="form-control" id="email" v-model="email" placeholder="Skriv din e-postadress" />
+              </div>
 
-    <div class="form-group mb-3">
-      <label for="requestedSeats">Antal biljetter:</label>
-      <div class="input-group">
-        <button
-          class="btn btn-outline-secondary"
-          type="button"
-          @click="decreaseTickets"
-        >
-          -
-        </button>
-        <input
-          type="number"
-          class="form-control text-center"
-          id="requestedSeats"
-          v-model="requestedSeats"
-          min="1"
-          readonly
-        />
-        <button
-          class="btn btn-outline-secondary"
-          type="button"
-          @click="increaseTickets"
-        >
-          +
-        </button>
-      </div>
-    </div>
+              <div class="form-group mb-3">
+                <label for="requestedSeats">Antal biljetter:</label>
+                <div class="input-group">
+                  <button class="btn btn-outline-secondary" type="button" @click="decreaseTickets">-</button>
+                  <input type="number" class="form-control text-center" id="requestedSeats" v-model="requestedSeats" min="1" readonly />
+                  <button class="btn btn-outline-secondary" type="button" @click="increaseTickets">+</button>
+                </div>
+              </div>
 
-    <!-- Felmeddelande vid misslyckad bokning -->
-    <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
-  </div>
+              <!-- Felmeddelande vid misslyckad bokning -->
+              <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
+            </div>
 
-  <!-- Bekräftelsemeddelande visas bara om bokningen lyckades och det inte finns ett felmeddelande -->
-  <div v-else>
-    <div v-if="isBookingSuccessful">
-      <p>Tack för din bokning!</p>
-      <p>
-        <strong>E-post:</strong> {{ email }}
-      </p>
-      <p>
-        <strong>Antal biljetter:</strong> {{ requestedSeats }}
-      </p>
-    </div>
-    <div v-else>
-      <p class="text-danger">Bokningen misslyckades, försök igen.</p>
-    </div>
-  </div>
-</div>
+            <div v-else>
+              <div v-if="isBookingSuccessful">
+                <p>Tack för din bokning!</p>
+                <p><strong>E-post:</strong> {{ email }}</p>
+                <p><strong>Antal biljetter:</strong> {{ requestedSeats }}</p>
+              </div>
+              <div v-else>
+                <p class="text-danger">Bokningen misslyckades, försök igen.</p>
+              </div>
+            </div>
+          </div>
 
           <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Stäng
-            </button>
-
-            <button
-              v-if="!isBookingConfirmed"
-              type="button"
-              class="btn btn-primary"
-              @click="saveChanges"
-            >
-              Bekräfta bokning
-            </button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+            <button v-if="!isBookingConfirmed" type="button" class="btn btn-primary" @click="saveChanges">Bekräfta bokning</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 <style scoped>
-/* Stil för input-fältet för antal biljetter */
 .input-group {
   display: flex;
   justify-content: center;
