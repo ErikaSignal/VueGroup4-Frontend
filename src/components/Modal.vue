@@ -12,6 +12,8 @@ const email = ref('');
 const requestedSeats = ref(1); 
 const isBookingConfirmed = ref(false);
 const emit = defineEmits(['reload-parent']);
+const errorMessage = ref('');
+const isBookingSuccessful = ref(false);
 
 
 // Hantera modalen med Bootstrap's event för att återställa bokningen vid öppning
@@ -37,10 +39,18 @@ const updateBooking = async () => {
     const response = await axios.patch(`/booking/${bookingId}`, updatedBooking);
     if(response.status==200){
       emit('reload-parent');
+      isBookingSuccessful.value = true; //Bokning lyckades
+      isBookingConfirmed.value = true; //Bekräftar bokningen
+      errorMessage.value = '';
     }
-    console.log('Bokningen har uppdaterats:', response.data);
+    //console.log('Bokningen har uppdaterats:', response.data);
   } catch (error) {
-    console.error('Det gick inte att uppdatera bokningen:', error);
+    if (error.response && error.response.status === 400) {
+      errorMessage.value = error.response.data; // Visa backend-felmeddelandet
+    } else {
+      errorMessage.value = 'Ett oväntat fel inträffade, försök igen senare.';
+    }
+    isBookingSuccessful.value = false;
   }
 };
 
@@ -105,8 +115,8 @@ const resetBooking = () => {
         <div class="modal-content">
           <div class="modal-header">
 
-
             <h4> {{ props.title }}  {{ formatDate(movieId )}} {{ formatTime(movieId )}}</h4>
+            <div v-if="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
             <button
               type="button"
               class="btn-close"
@@ -115,59 +125,68 @@ const resetBooking = () => {
             ></button>
           </div>
 
-          <!-- Modal Body - Dynamiskt innehåll -->
-          <div class="modal-body">
-            <div v-if="!isBookingConfirmed">
-              <div class="form-group mb-3">
-                <label for="email">Email adress:</label>
-                <input
-                  type="email"
-                  class="form-control"
-                  id="email"
-                  v-model="email"
-                  placeholder="Skriv din e-postadress"
-                />
-              </div>
+<!-- Modal Body - Dynamiskt innehåll -->
+<div class="modal-body">
+  <div v-if="!isBookingConfirmed">
+    <div class="form-group mb-3">
+      <label for="email">Email adress:</label>
+      <input
+        type="email"
+        class="form-control"
+        id="email"
+        v-model="email"
+        placeholder="Skriv din e-postadress"
+      />
+    </div>
 
-              <div class="form-group mb-3">
-                <label for="requestedSeats">Antal biljetter:</label>
-                <div class="input-group">
-                  <button
-                    class="btn btn-outline-secondary"
-                    type="button"
-                    @click="decreaseTickets"
-                  >
-                    -
-                  </button>
-                  <input
-                    type="number"
-                    class="form-control text-center"
-                    id="requestedSeats"
-                    v-model="requestedSeats"
-                    min="1"
-                    readonly
-                  />
-                  <button
-                    class="btn btn-outline-secondary"
-                    type="button"
-                    @click="increaseTickets"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-            </div>
+    <div class="form-group mb-3">
+      <label for="requestedSeats">Antal biljetter:</label>
+      <div class="input-group">
+        <button
+          class="btn btn-outline-secondary"
+          type="button"
+          @click="decreaseTickets"
+        >
+          -
+        </button>
+        <input
+          type="number"
+          class="form-control text-center"
+          id="requestedSeats"
+          v-model="requestedSeats"
+          min="1"
+          readonly
+        />
+        <button
+          class="btn btn-outline-secondary"
+          type="button"
+          @click="increaseTickets"
+        >
+          +
+        </button>
+      </div>
+    </div>
 
-            <div v-else>
-              <p>Tack för din bokning!</p>
-              <p>
-                <strong>E-post:</strong> {{ email }}
-              </p>
-              <p>
-                <strong>Antal biljetter:</strong> {{ requestedSeats }}
-              </p>
-            </div>
-          </div>
+    <!-- Felmeddelande vid misslyckad bokning -->
+    <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
+  </div>
+
+  <!-- Bekräftelsemeddelande visas bara om bokningen lyckades och det inte finns ett felmeddelande -->
+  <div v-else>
+    <div v-if="isBookingSuccessful">
+      <p>Tack för din bokning!</p>
+      <p>
+        <strong>E-post:</strong> {{ email }}
+      </p>
+      <p>
+        <strong>Antal biljetter:</strong> {{ requestedSeats }}
+      </p>
+    </div>
+    <div v-else>
+      <p class="text-danger">Bokningen misslyckades, försök igen.</p>
+    </div>
+  </div>
+</div>
 
           <div class="modal-footer">
             <button
