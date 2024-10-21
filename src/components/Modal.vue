@@ -115,7 +115,7 @@ const resetBooking = () => {
         <div class="modal-content">
           <div class="modal-header">
 
-            <h4> {{ props.title }}  {{ formatDate(movieId )}} {{ formatTime(movieId )}}</h4>
+            <h4> {{ props.title }}  {{ formatDate(movieId )}} kl. {{ formatTime(movieId )}}</h4>
             <div v-if="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
             <button
               type="button"
