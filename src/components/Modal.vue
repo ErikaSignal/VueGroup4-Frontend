@@ -1,96 +1,3 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-axios.defaults.baseURL = 'http://localhost:8081/api';
-const props = defineProps({
-  movieId: Number,
-  title: String,
-  filmId: Number,
-});
-
-const email = ref('');
-const requestedSeats = ref(1); 
-const isBookingConfirmed = ref(false);
-const emit = defineEmits(['reload-parent']);
-
-
-// Hantera modalen med Bootstrap's event för att återställa bokningen vid öppning
-onMounted(() => {
-  const modalElement = document.getElementById('exampleModalCenter');
-
-  // Återställ modalen varje gång den öppnas
-  modalElement.addEventListener('show.bs.modal', () => {
-    resetBooking();
-  });
-});
-
-const updateBooking = async () => {
-  try {
-    const bookingId = props.filmId;// Replace with the correct booking ID
-    const updatedBooking = {
-      bookedSeats: requestedSeats.value // Skicka antal bokade platser som ett objekt
-    };
-
-    console.log(bookingId)
-
-    // Skicka hela objektet istället för bara requestedSeats.value
-    const response = await axios.patch(`/booking/${bookingId}`, updatedBooking);
-    if(response.status==200){
-      emit('reload-parent');
-    }
-    console.log('Bokningen har uppdaterats:', response.data);
-  } catch (error) {
-    console.error('Det gick inte att uppdatera bokningen:', error);
-  }
-};
-
-
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  const options = { weekday: 'long', day: 'numeric', month: 'long' };
-  return date.toLocaleDateString('sv-SE', options);
-
-};
-
-
-
-const formatTime = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
-  
-};
-
-const saveChanges = async () => {
-  if (email.value === '' || requestedSeats.value < 1) {
-    alert('Vänligen fyll i en giltig e-postadress och välj minst en biljett.');
-    return;
-  }
-  
-  isBookingConfirmed.value = true;
-  console.log('E-post:', email.value);
-  console.log('Antal biljetter:', requestedSeats.value);
-  await updateBooking()
-};
-
-// Hantera biljetter
-const increaseTickets = () => {
-  requestedSeats.value++;
-};
-
-const decreaseTickets = () => {
-  if (requestedSeats.value > 1) {
-    requestedSeats.value--;
-  }
-};
-
-// Funktion för att återställa bokningen
-const resetBooking = () => {
-  isBookingConfirmed.value = false;
-  email.value = ''; 
-  requestedSeats.value = 1; 
-};
-</script>
-
 <template>
   <div>
     <!-- Modal -->
@@ -104,9 +11,7 @@ const resetBooking = () => {
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-
-
-            <h4> {{ props.title }}  {{ formatDate(movieId )}} {{ formatTime(movieId )}}</h4>
+            <h4> {{ props.title }}  {{ formatDate(movieTime )}} {{ formatTime(movieTime )}}</h4>
             <button
               type="button"
               class="btn-close"
@@ -192,6 +97,72 @@ const resetBooking = () => {
     </div>
   </div>
 </template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import { formatTime, formatDate } from '@/services/utils/dateUtils';
+import { updateBookingFromDb } from '@/services/database';
+
+const props = defineProps({
+  movieTime: Number,
+  title: String,
+  filmId: Number,
+});
+
+const email = ref('');
+const requestedSeats = ref(1); 
+const isBookingConfirmed = ref(false);
+const emit = defineEmits(['reload-parent']);
+
+
+// Hantera modalen med Bootstrap's event för att återställa bokningen vid öppning
+onMounted(() => {
+  const modalElement = document.getElementById('exampleModalCenter');
+  modalElement.addEventListener('show.bs.modal', () => {
+    resetBooking();
+  });
+});
+
+const updateBooking = async () => {
+  try {
+    const response = await updateBookingFromDb(props.filmId, requestedSeats.value);
+    if (response.status === 200) {
+      emit('reload-parent');
+    }
+  } catch (error) {
+    console.error('Det gick inte att uppdatera bokningen:', error);
+  }
+};
+
+const saveChanges = async () => {
+  if (email.value === '' || requestedSeats.value < 1) {
+    alert('Vänligen fyll i en giltig e-postadress och välj minst en biljett.');
+    return;
+  }
+  isBookingConfirmed.value = true;
+  await updateBooking()
+};
+
+// Hantera biljetter
+const increaseTickets = () => {
+  requestedSeats.value++;
+};
+
+const decreaseTickets = () => {
+  if (requestedSeats.value > 1) {
+    requestedSeats.value--;
+  }
+};
+
+// Funktion för att återställa bokningen
+const resetBooking = () => {
+  isBookingConfirmed.value = false;
+  email.value = ''; 
+  requestedSeats.value = 1; 
+};
+</script>
+
+
 <style scoped>
 /* Stil för input-fältet för antal biljetter */
 .input-group {
