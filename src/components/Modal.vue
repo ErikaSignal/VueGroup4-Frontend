@@ -33,15 +33,16 @@ const updateBooking = async () => {
     };
 
     const response = await axios.patch(`/booking/${bookingId}`, updatedBooking);
-    if (response.status == 200) {
+    if (response.status === 200) {
       emit('reload-parent');
       isBookingSuccessful.value = true;
       isBookingConfirmed.value = true;
       errorMessage.value = '';
     }
   } catch (error) {
+    console.error('Ett fel inträffade vid bokning:', error);
     if (error.response && error.response.status === 400) {
-      errorMessage.value = error.response.data;
+      errorMessage.value = 'Inte tillräckligt med platser tillgängliga.'; 
     } else {
       errorMessage.value = 'Ett oväntat fel inträffade, försök igen senare.';
     }
@@ -124,21 +125,18 @@ const formatTime = (dateString) => {
                   <button class="btn btn-outline-secondary" type="button" @click="increaseTickets">+</button>
                 </div>
               </div>
-
-              <!-- Felmeddelande vid misslyckad bokning -->
-              <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
             </div>
 
-            <div v-else>
-              <div v-if="isBookingSuccessful">
-                <p>Tack för din bokning!</p>
-                <p><strong>E-post:</strong> {{ email }}</p>
-                <p><strong>Antal biljetter:</strong> {{ requestedSeats }}</p>
-              </div>
-              <div v-else>
-                <p class="text-danger">Bokningen misslyckades, försök igen.</p>
-              </div>
-            </div>
+          <div v-else>
+            <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
+          <div v-else>
+          <div v-if="isBookingSuccessful">
+            <p>Tack för din bokning!</p>
+            <p><strong>E-post:</strong> {{ email }}</p>
+            <p><strong>Antal biljetter:</strong> {{ requestedSeats }}</p>
+          </div>
+          <p v-if ="!isBookingSuccessful" class="text-danger">Bokningen misslyckades, försök igen.</p>
+          </div>
           </div>
 
           <div class="modal-footer">
@@ -147,6 +145,7 @@ const formatTime = (dateString) => {
           </div>
         </div>
       </div>
+      </div> 
     </div>
   </div>
 </template>
