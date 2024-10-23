@@ -135,7 +135,6 @@ const formatTime = (dateString) => {
             <p><strong>E-post:</strong> {{ email }}</p>
             <p><strong>Antal biljetter:</strong> {{ requestedSeats }}</p>
           </div>
-          <p v-if ="!isBookingSuccessful" class="text-danger">Bokningen misslyckades, försök igen.</p>
           </div>
           </div>
 
