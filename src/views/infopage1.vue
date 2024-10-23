@@ -8,7 +8,7 @@
     <section class="container-lg">
       <div v-if="post" class="row">
         <img class="poster-large col-md-3 col-12" :src="getPosterById(route.params.id)" alt="Movie Poster">
-        
+
         <div class="col-md col-12 d-flex flex-column">
           <h2>{{ post.title }}</h2>
           <div class="flex-grow-1">
@@ -18,9 +18,9 @@
         <div class="col-md col-11 d-flex flex-column custom-border mx-auto custom-bg">
           <div style="height: 2.5rem;"></div>
           <div class="flex-grow-1">
-            <p class="fs-4 f"><strong> Utgivningsdatum:</strong> {{ post.release_date }}</p>
-            <p class="fs-4 fw-bold">Producent: {{ post.producer }}</p>
-            <p class="fs-4 fw-bold">Regissör: {{ post.director }}</p>
+            <p class="fs-4"><strong> Utgivningsdatum:</strong> {{ post.release_date }}</p>
+            <p class="fs-4"><strong>Producent:</strong> {{ post.producer }}</p>
+            <p class="fs-4 "><strong>Regissör:</strong> {{ post.director }}</p>
           </div>
         </div>
       </div>
@@ -28,15 +28,14 @@
     </section>
 
     <!-- Visning Information Section -->
-    <section v-for="(film, index) in filmer" :key="index" class="container py-4 " :id="film.bookingId">
-
+    <section v-if="post" v-for="(film, index) in filmer" :key="index" class="container py-4 " :id="film.bookingId">
       <h3>{{ formatDate(film.bookingTime) }}</h3>
 
       <div class="row custom-height col-md col-11 m-auto rounded border mb-5 pb-md-0 pb-4 w-100">
         <img class="poster-small col-md col-12 p-4" :src="getPosterById(route.params.id)" alt="Movie Poster">
 
         <div class="col-md col-12 d-flex flex-column justify-content-center align-items-center">
-          <p v-if="post" class="fs-2">{{ post.title }}</p>
+          <p  class="fs-2">{{ post.title }}</p>
           <p class="fs-4">{{ formatTime(film.bookingTime) }}</p>
         </div>
         <div class="col-md col-12 d-flex justify-content-center align-items-center">
@@ -48,20 +47,16 @@
           </p>
         </div>
         <div class="col-md col-12 d-flex justify-content-center align-items-center">
-          <button
-            type="button"
-            class="btn btn-warning btn-lg"
-            data-bs-toggle="modal"
-            data-bs-target="#exampleModalCenter"
-            @click="() => { setMovieId(film.bookingTime); setFilmId(film.bookingId); }"
-          >
+          <button type="button" class="btn btn-warning btn-lg" data-bs-toggle="modal"
+            data-bs-target="#exampleModalCenter" @click="setFilmDetails(film.bookingTime, film.bookingId)">
             Boka
           </button>
         </div>
       </div>
 
       <!-- Modal Component -->
-      <ModalComponent :movieId="currentMovieId" :title="post.title" :filmId="currentFilmId" @reload-parent="reloadParent"/>
+      <ModalComponent :movieTime="movieTime" :title="post.title" :filmId="currentFilmId"
+        @reload-parent="reloadParent" />
     </section>
   </div>
 </template>
@@ -69,15 +64,12 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { getOneMovie } from '../services/api.js';
 import ModalComponent from '../components/Modal.vue';
-import poster1 from '/src/img/poster1.jpg';
-import poster2 from '/src/img/poster2.jpg';
-import poster3 from '/src/img/poster3.jpg';
-import axios from 'axios';
 import { reactive } from 'vue';
-
-axios.defaults.baseURL = 'http://localhost:8081/api';
+import { getOneMovie } from '../services/api.js';
+import { posters } from '@/services/utils/json.js';
+import { formatTime, formatDate } from '@/services/utils/dateUtils';
+import { fetchFilmer } from '@/services/database.js';
 
 const state = reactive({ count: 0 });
 const filmer = ref([]);
@@ -88,7 +80,7 @@ const loading = ref(false);
 
 // Hämta filmer och uppdatera sidan
 onMounted(() => {
-  fetchFilmer();
+  fetchFilmerFromDb();
 });
 
 const reloadParent = () => {
@@ -97,36 +89,18 @@ const reloadParent = () => {
 
 // Watch-funktion för att hämta ny data när `state.count` ändras
 watch(() => state.count, async () => {
-  await fetchFilmer(); // Hämta uppdaterad information från API
+  await fetchFilmerFromDb(); // Hämta uppdaterad information från API
 });
 
-// Funktion för att hämta filmer och poster
-const fetchFilmer = async () => {
+const fetchFilmerFromDb = async () => {
   try {
-    const response = await axios.get(`/swapi/${route.params.id}`);
-    filmer.value = response.data;
-    console.log("Filmer:", filmer.value);
-  } catch (error) {
-    console.error("Kunde inte hämta filmer:", error);
+    filmer.value = await fetchFilmer(route.params.id);
+  } catch (err) {
+    console.error("Kunde inte hämta filmer");
+  } finally {
+    loading.value = false;
   }
-};
-
-// Funktioner för datum och tid
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  const options = { weekday: 'long', day: 'numeric', month: 'long' };
-  const formattedDate = date.toLocaleDateString('sv-SE', options);
-  return capitalizeFirstLetter(formattedDate);
-};
-
-const formatTime = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
-};
-
-const capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
+}
 
 // Hämta en film baserat på route params
 watch(() => route.params.id, fetchData, { immediate: true });
@@ -144,29 +118,22 @@ async function fetchData() {
   }
 }
 
-// Poster-bilder
-const posters = {
-  1: poster1,
-  2: poster2,
-  3: poster3
-};
-
 // Funktion för att returnera rätt poster baserat på film-ID
 const getPosterById = (id) => {
-  return posters[id] || ''; // Om inget matchande ID finns, returnera en fallback-bild
+  const poster = posters.find((p) => p.id === parseInt(id));
+  return poster ? poster.posterUrl : ''; 
 };
+
 
 // Spara movieId och filmId för modalen
-const currentMovieId = ref(null);
+const movieTime = ref(null);
 const currentFilmId = ref(null);
 
-const setMovieId = (id) => {
-  currentMovieId.value = id; 
+const setFilmDetails = (time, id) => {
+  movieTime.value = time;
+  currentFilmId.value = id;
 };
 
-const setFilmId = (id) => {
-  currentFilmId.value = id; 
-};
 </script>
 
 <style scoped>
