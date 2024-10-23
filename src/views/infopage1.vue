@@ -121,7 +121,7 @@ async function fetchData() {
 // Funktion för att returnera rätt poster baserat på film-ID
 const getPosterById = (id) => {
   const poster = posters.find((p) => p.id === parseInt(id));
-  return poster ? poster.posterUrl : ''; // Return the posterUrl if found, or fallback to an empty string if not
+  return poster ? poster.posterUrl : ''; 
 };
 
 
