@@ -16,7 +16,7 @@ export async function getOneMovie(id) {
         'https://www.swapi.tech/api/films/1',
         'https://www.swapi.tech/api/films/2',
         'https://www.swapi.tech/api/films/3'
-    ];
+    ]
 
     try {
         const responses = await Promise.all(apiUrls.map(url => fetch(url)));
@@ -25,7 +25,7 @@ export async function getOneMovie(id) {
         console.error('Fel vid hämtning av filmer:', error);
     }
   }
-
+ 
 
 
 

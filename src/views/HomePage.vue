@@ -7,12 +7,12 @@
             <h3>Filmer vi visar nu</h3>
         </div>
 
-        <div class="row movies-grid">
+        <div v-if="movies" class="row movies-grid">
             <div class="col-md-4 movie-poster" v-for="movie in movies" :key="movie.id">
                 <router-link :to="{ name: 'MoviePage', params: { id: movie.id } }">
                     <img :src="movie.posterUrl" :alt="movie.title" class="img-fluid" />
                 </router-link>
-                <h3>
+                <h3 class="pointer">
                     <router-link :to="{ name: 'MoviePage', params: { id: movie.id } }">
                         {{ movie.title }}
                     </router-link>
@@ -24,28 +24,23 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-
-import poster1 from '/src/assets/img/poster1.jpg';
-import poster2 from '/src/assets/img/poster2.jpg';
-import poster3 from '/src/assets/img/poster3.jpg';
-import { moviePosters } from '@/services/utils/json';
+import { posters } from '@/services/utils/json';
 import { getAllMovies } from '@/services/api';
+import { data } from 'jquery';
+
 const logo = './src/assets/img/logo.png';
-
-const movies = ref(moviePosters);
-
+const movies = ref(posters);
 
 const fetchMovies = async () => {
-  try {
-    const data = await getAllMovies();
-    movies.value[0].title = data[0].result.properties.title;
-    movies.value[1].title = data[1].result.properties.title;
-    movies.value[2].title = data[2].result.properties.title;
-  } catch (err) {
-    console.error("Kunde inte hämta filmer");
-  }
+    try {
+        const data = await getAllMovies();
+        for (let i = 0; i < movies.value.length; i++) {
+            movies.value[i].title = data[i].result.properties.title;
+        }
+    } catch (err) {
+        console.error("Kunde inte hämta filmer");
+    }
 }
-
 
 onMounted(() => {
     fetchMovies();

@@ -18,9 +18,9 @@
         <div class="col-md col-11 d-flex flex-column custom-border mx-auto custom-bg">
           <div style="height: 2.5rem;"></div>
           <div class="flex-grow-1">
-            <p class="fs-4 f"><strong> Utgivningsdatum:</strong> {{ post.release_date }}</p>
-            <p class="fs-4 fw-bold">Producent: {{ post.producer }}</p>
-            <p class="fs-4 fw-bold">Regissör: {{ post.director }}</p>
+            <p class="fs-4"><strong> Utgivningsdatum:</strong> {{ post.release_date }}</p>
+            <p class="fs-4"><strong>Producent:</strong> {{ post.producer }}</p>
+            <p class="fs-4 "><strong>Regissör:</strong> {{ post.director }}</p>
           </div>
         </div>
       </div>
@@ -28,14 +28,14 @@
     </section>
 
     <!-- Visning Information Section -->
-    <section v-for="(film, index) in filmer" :key="index" class="container py-4 " :id="film.bookingId">
+    <section v-if="post" v-for="(film, index) in filmer" :key="index" class="container py-4 " :id="film.bookingId">
       <h3>{{ formatDate(film.bookingTime) }}</h3>
 
       <div class="row custom-height col-md col-11 m-auto rounded border mb-5 pb-md-0 pb-4 w-100">
         <img class="poster-small col-md col-12 p-4" :src="getPosterById(route.params.id)" alt="Movie Poster">
 
         <div class="col-md col-12 d-flex flex-column justify-content-center align-items-center">
-          <p v-if="post" class="fs-2">{{ post.title }}</p>
+          <p  class="fs-2">{{ post.title }}</p>
           <p class="fs-4">{{ formatTime(film.bookingTime) }}</p>
         </div>
         <div class="col-md col-12 d-flex justify-content-center align-items-center">
@@ -120,8 +120,10 @@ async function fetchData() {
 
 // Funktion för att returnera rätt poster baserat på film-ID
 const getPosterById = (id) => {
-  return posters[id] || ''; // Om inget matchande ID finns, returnera en fallback-bild
+  const poster = posters.find((p) => p.id === parseInt(id));
+  return poster ? poster.posterUrl : ''; // Return the posterUrl if found, or fallback to an empty string if not
 };
+
 
 // Spara movieId och filmId för modalen
 const movieTime = ref(null);
