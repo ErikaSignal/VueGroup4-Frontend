@@ -19,12 +19,14 @@ export async function getOneMovie(id) {
     ]
 
     try {
-        const responses = await Promise.all(apiUrls.map(url => fetch(url)));
-        return await Promise.all(responses.map(res => res.json()));
+      const responses = await Promise.all(apiUrls.map(url => fetch(url)));
+      return await Promise.all(responses.map(res => res.json()));
     } catch (error) {
-        console.error('Fel vid hämtning av filmer:', error);
+      console.error('Fel vid hämtning av filmer:', error);
+      throw new Error('Failed to fetch all movies'); 
     }
   }
+
  
 
 
