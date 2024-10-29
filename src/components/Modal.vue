@@ -79,11 +79,13 @@ const isBookingSuccessful = ref(false);
 
 
 // Hantera modalen med Bootstrap's event för att återställa bokningen vid öppning
-onMounted(() => {
+ onMounted(() => {
   const modalElement = document.getElementById('exampleModalCenter');
-  modalElement.addEventListener('show.bs.modal', () => {
-    resetBooking();
-  });
+  if (modalElement) {
+    modalElement.addEventListener('show.bs.modal', () => {
+      resetBooking();
+    });
+  }
 });
 
 
