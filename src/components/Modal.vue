@@ -77,8 +77,6 @@ const emit = defineEmits(['reload-parent']);
 const errorMessage = ref('');
 const isBookingSuccessful = ref(false);
 
-
-// Hantera modalen med Bootstrap's event för att återställa bokningen vid öppning
  onMounted(() => {
   const modalElement = document.getElementById('exampleModalCenter');
   if (modalElement) {
@@ -120,7 +118,6 @@ const saveChanges = async () => {
   await updateBooking()
 };
 
-// Hantera biljetter
 const increaseTickets = () => {
   requestedSeats.value++;
 };
@@ -131,11 +128,10 @@ const decreaseTickets = () => {
   }
 };
 
-// Funktion för att återställa bokningen
 const resetBooking = () => {
   isBookingConfirmed.value = false;
-  isBookingSuccessful.value = false; // Återställ bokningsstatus
-  errorMessage.value = '';           // Återställ felmeddelandet
+  isBookingSuccessful.value = false;
+  errorMessage.value = '';           
   email.value = '';
   requestedSeats.value = 1;
 };

@@ -13,10 +13,9 @@ vi.mock('@/services/api', () => ({
   getOneMovie: vi.fn(),
 }));
 
-// Mocka useRoute
 vi.mock('vue-router', () => ({
   useRoute: () => ({
-    params: { id: 1 }  // Mocka route params
+    params: { id: 1 } 
   }),
 }));
 
@@ -33,7 +32,6 @@ describe('infopage1', () => {
   });
 });
 
-  // Test för att återställa bokningen
   it('resets the booking correctly', async () => {
     const wrapper = mount(Modal, {
       props: {
@@ -41,13 +39,10 @@ describe('infopage1', () => {
       },
     });
 
-    // Simulera en lyckad bokning
     await wrapper.vm.updateBooking();
 
-    // Återställ bokningen
     wrapper.vm.resetBooking();
 
-    // Kontrollera att alla värden återställs
     expect(wrapper.vm.isBookingSuccessful).toBe(false);
     expect(wrapper.vm.errorMessage).toBe('');
     expect(wrapper.vm.requestedSeats).toBe(1);
