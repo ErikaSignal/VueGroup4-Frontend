@@ -78,18 +78,16 @@ const post = ref(null);
 const error = ref(null);
 const loading = ref(false);
 
-// Hämta filmer och uppdatera sidan
 onMounted(() => {
   fetchFilmerFromDb();
 });
 
 const reloadParent = () => {
-  state.count++; // Öka räknaren för att trigga en omhämtning av data
+  state.count++;
 };
 
-// Watch-funktion för att hämta ny data när `state.count` ändras
 watch(() => state.count, async () => {
-  await fetchFilmerFromDb(); // Hämta uppdaterad information från API
+  await fetchFilmerFromDb();
 });
 
 const fetchFilmerFromDb = async () => {
@@ -102,7 +100,6 @@ const fetchFilmerFromDb = async () => {
   }
 }
 
-// Hämta en film baserat på route params
 watch(() => route.params.id, fetchData, { immediate: true });
 
 async function fetchData() {
@@ -118,14 +115,11 @@ async function fetchData() {
   }
 }
 
-// Funktion för att returnera rätt poster baserat på film-ID
 const getPosterById = (id) => {
   const poster = posters.find((p) => p.id === parseInt(id));
   return poster ? poster.posterUrl : ''; 
 };
 
-
-// Spara movieId och filmId för modalen
 const movieTime = ref(null);
 const currentFilmId = ref(null);
 
@@ -133,7 +127,6 @@ const setFilmDetails = (time, id) => {
   movieTime.value = time;
   currentFilmId.value = id;
 };
-
 </script>
 
 <style scoped>

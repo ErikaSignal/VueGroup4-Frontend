@@ -26,7 +26,6 @@
 import { ref, onMounted } from 'vue';
 import { posters } from '@/services/utils/json';
 import { getAllMovies } from '@/services/api';
-import { data } from 'jquery';
 
 const logo = './src/assets/img/logo.png';
 const movies = ref(posters);
