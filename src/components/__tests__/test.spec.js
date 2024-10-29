@@ -37,6 +37,19 @@ describe('Modal', () => {
     await decreaseButton.trigger('click');
     expect(ticketInput.element.value).toBe('1');
   });
+  it('decreases tickets when decreaseTickets is called', async () => {
+    const ticketInput = wrapper.find('#requestedSeats');
+
+    expect(ticketInput.element.value).toBe('1');
+
+    const increaseButton = wrapper.find('button.btn-outline-secondary[type="button"]:last-child');
+    const decreaseButton = wrapper.find('button.btn-outline-secondary[type="button"]:first-child');
+    await increaseButton.trigger('click');
+
+    expect(ticketInput.element.value).toBe('2');
+    await decreaseButton.trigger('click');
+    expect(ticketInput.element.value).toBe('1');
+  });
 
   it('confirms booking when saveChanges is called with valid email', async () => {
     wrapper.find('#email').setValue('test@example.com');
